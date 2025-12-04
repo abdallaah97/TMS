@@ -1,6 +1,5 @@
 ﻿using Application.DTOs;
-using Domain.Entities;
-using Infrastructure.Context;
+using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TMS.Controllers
@@ -9,35 +8,50 @@ namespace TMS.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private TMSDbContext _dbContext;
-        public UsersController(TMSDbContext dbContext)
+        private readonly IUserService _userService;
+        public UsersController(IUserService userService)
         {
-            _dbContext = dbContext;
+            _userService = userService;
         }
 
         [HttpPost("CreateUser")]
-        public IActionResult CreateUser([FromBody] CreateUserDto user)
+        public IActionResult CreateUser([FromBody] CreateUpdateUserDto user)
         {
-            var userObj = new User();
-
-            userObj.Name = user.Name;
-            userObj.Email = user.Email;
-            userObj.UserName = user.UserName;
-            userObj.Password = user.Password;
-
-            _dbContext.Users.Add(userObj);
-            _dbContext.SaveChanges();
+            _userService.CreateUser(user);
             return Ok();
         }
 
         [HttpDelete("DeleteUser")]
-        public IActionResult DeleteUser(int userid)
+        public IActionResult DeleteUser(int id)
         {
-
-            var userObjToDelete = _dbContext.Users.Find(userid);
-            _dbContext.Users.Remove(userObjToDelete);
-            _dbContext.SaveChanges();
+            _userService.DeleteUser(id);
             return Ok();
+        }
+
+        [HttpGet("GetUserById/{id}")]
+        public IActionResult GetUserById(int id)
+        {
+            var user = _userService.GetUserById(id);
+
+            if (user == null)
+            {
+                return NotFound("User not exist in the database");
+            }
+            return Ok(user);
+        }
+
+        [HttpPut("UpdateUser/{id}")]
+        public IActionResult UpdateUser(int id, [FromBody] CreateUpdateUserDto user)
+        {
+            _userService.UpdateUser(id, user);
+            return Ok();
+        }
+
+        [HttpPost("GetUsers")]
+        public IActionResult GetUsers([FromBody] UserFilterDto filter)
+        {
+            var responseList = _userService.GetUsers(filter);
+            return Ok(responseList);
         }
 
     }

@@ -1,4 +1,9 @@
+using Application.Repositories.Interfaces;
+using Application.Services;
+using Application.Services.Interfaces;
+using Domain.Entities;
 using Infrastructure.Context;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +15,11 @@ builder.Services.AddDbContext<TMSDbContext>
     (options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("Default"))
     );
+
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IUserService), typeof(UserService));
+
 
 var app = builder.Build();
 
