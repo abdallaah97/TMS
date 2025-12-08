@@ -10,6 +10,7 @@ namespace Domain.Entities
         public string Name { get; set; }
         [MaxLength(200)]
         [Required]
+        [EmailAddress]
         public string? Email { get; set; }
         public string Password { get; set; }
         [MaxLength(200)]

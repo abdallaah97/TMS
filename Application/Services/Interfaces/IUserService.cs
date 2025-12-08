@@ -4,10 +4,10 @@ namespace Application.Services.Interfaces
 {
     public interface IUserService
     {
-        void CreateUser(CreateUpdateUserDto user);
-        UserListDto GetUserById(int id);
-        void UpdateUser(int id, CreateUpdateUserDto user);
-        void DeleteUser(int id);
-        List<UserListDto> GetUsers(UserFilterDto filter);
+        Task CreateUser(CreateUpdateUserDto user);
+        Task<UserListDto> GetUserById(int id);
+        Task UpdateUser(int id, CreateUpdateUserDto user);
+        Task DeleteUser(int id);
+        Task<List<UserListDto>> GetUsers(UserFilterDto filter);
     }
 }

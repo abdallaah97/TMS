@@ -2,6 +2,7 @@
 using Application.Repositories.Interfaces;
 using Application.Services.Interfaces;
 using Domain.Entities;
+using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -13,7 +14,7 @@ namespace Application.Services
             _userRepo = userRepo;
         }
 
-        public void CreateUser(CreateUpdateUserDto user)
+        public async Task CreateUser(CreateUpdateUserDto user)
         {
             var userObj = new User();
 
@@ -22,19 +23,19 @@ namespace Application.Services
             userObj.UserName = user.UserName;
             userObj.Password = user.Password;
 
-            _userRepo.Insert(userObj);
-            _userRepo.SaveChanges();
+            await _userRepo.Insert(userObj);
+            await _userRepo.SaveChanges();
         }
 
-        public void DeleteUser(int id)
+        public async Task DeleteUser(int id)
         {
-            _userRepo.Delete(id);
-            _userRepo.SaveChanges();
+            await _userRepo.Delete(id);
+            await _userRepo.SaveChanges();
         }
 
-        public UserListDto GetUserById(int id)
+        public async Task<UserListDto> GetUserById(int id)
         {
-            var user = _userRepo.GetById(id);
+            var user = await _userRepo.GetById(id);
             return user == null ? null : new UserListDto
             {
                 Id = user.Id,
@@ -45,7 +46,7 @@ namespace Application.Services
         }
 
 
-        public List<UserListDto> GetUsers(UserFilterDto filter)
+        public async Task<List<UserListDto>> GetUsers(UserFilterDto filter)
         {
             // Queryable
             // Enumerable
@@ -66,9 +67,9 @@ namespace Application.Services
             return responseList;
         }
 
-        public void UpdateUser(int id, CreateUpdateUserDto user)
+        public async Task UpdateUser(int id, CreateUpdateUserDto user)
         {
-            var userObj = _userRepo.GetById(id);
+            var userObj = await _userRepo.GetById(id);
 
             userObj.UserName = user.UserName;
             userObj.Name = user.Name;
@@ -76,7 +77,7 @@ namespace Application.Services
             userObj.Password = user.Password;
 
             _userRepo.Update(userObj);
-            _userRepo.SaveChanges();
+            await _userRepo.SaveChanges();
         }
     }
 }

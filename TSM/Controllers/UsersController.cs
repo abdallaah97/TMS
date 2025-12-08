@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TMS.Controllers
@@ -15,23 +16,23 @@ namespace TMS.Controllers
         }
 
         [HttpPost("CreateUser")]
-        public IActionResult CreateUser([FromBody] CreateUpdateUserDto user)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUpdateUserDto user)
         {
-            _userService.CreateUser(user);
+            await _userService.CreateUser(user);
             return Ok();
         }
 
         [HttpDelete("DeleteUser")]
-        public IActionResult DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            _userService.DeleteUser(id);
+            await _userService.DeleteUser(id);
             return Ok();
         }
 
         [HttpGet("GetUserById/{id}")]
-        public IActionResult GetUserById(int id)
+        public async Task<IActionResult> GetUserById(int id)
         {
-            var user = _userService.GetUserById(id);
+            var user = await _userService.GetUserById(id);
 
             if (user == null)
             {
@@ -47,10 +48,11 @@ namespace TMS.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPost("GetUsers")]
-        public IActionResult GetUsers([FromBody] UserFilterDto filter)
+        public async Task<IActionResult> GetUsers([FromBody] UserFilterDto filter)
         {
-            var responseList = _userService.GetUsers(filter);
+            var responseList = await _userService.GetUsers(filter);
             return Ok(responseList);
         }
 
