@@ -1,10 +1,12 @@
 ﻿using Application.DTOs;
+using Application.DTOs.Auth;
 using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TMS.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -16,7 +18,7 @@ namespace TMS.Controllers
         }
 
         [HttpPost("CreateUser")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUpdateUserDto user)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto user)
         {
             await _userService.CreateUser(user);
             return Ok();
@@ -42,18 +44,24 @@ namespace TMS.Controllers
         }
 
         [HttpPut("UpdateUser/{id}")]
-        public IActionResult UpdateUser(int id, [FromBody] CreateUpdateUserDto user)
+        public IActionResult UpdateUser(int id, [FromBody] CreateUserDto user)
         {
             _userService.UpdateUser(id, user);
             return Ok();
         }
 
-        [Authorize]
         [HttpPost("GetUsers")]
         public async Task<IActionResult> GetUsers([FromBody] UserFilterDto filter)
         {
             var responseList = await _userService.GetUsers(filter);
             return Ok(responseList);
+        }
+
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto input)
+        {
+            await _userService.ChangePassword(input);
+            return Ok();
         }
 
     }

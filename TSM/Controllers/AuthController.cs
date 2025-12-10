@@ -26,5 +26,12 @@ namespace TMS.Controllers
             return Ok(response);
         }
 
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto input)
+        {
+            await _authService.ResetPassword(input);
+            return Ok();
+        }
+
     }
 }

@@ -19,6 +19,7 @@ builder.Services.AddDbContext<TMSDbContext>
         builder.Configuration.GetConnectionString("Default"))
     );
 
+builder.Services.AddHttpContextAccessor();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 
@@ -83,7 +84,6 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<TMSDbContext>();
     await UserSeedData.InitializeAsync(context);
 }
-
 
 
 app.UseSwagger();

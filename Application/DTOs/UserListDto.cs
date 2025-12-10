@@ -6,5 +6,7 @@
         public string Name { get; set; }
         public string? UserEmail { get; set; }
         public string UserName { get; set; }
+        public bool IsActive { get; set; }
+        public List<int> RolesIds { get; set; }
     }
 }

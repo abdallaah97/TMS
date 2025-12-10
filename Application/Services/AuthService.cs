@@ -9,6 +9,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 
 namespace Application.Services
@@ -17,17 +19,20 @@ namespace Application.Services
     {
         private readonly IConfiguration _config;
         private readonly IGenericRepository<User> _userRepo;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(IConfiguration config, IGenericRepository<User> userRepo)
+        public AuthService(IConfiguration config, IGenericRepository<User> userRepo, IHttpContextAccessor httpContextAccessor)
         {
             _config = config;
             _userRepo = userRepo;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<LoginResponseDto> LoginAsync(LoginRequestDto input)
         {
-            var user = _userRepo.GetAll()
-                .FirstOrDefault(u => u.Email.Trim().ToLower() == input.Email.Trim().ToLower());
+            var user = await _userRepo.GetAll()
+                .Include(u => u.UserRoles).ThenInclude(x => x.Role)
+                .FirstOrDefaultAsync(u => u.Email.Trim().ToLower() == input.Email.Trim().ToLower());
 
             if (user == null)
             {
@@ -53,7 +58,7 @@ namespace Application.Services
                 UserName = user.UserName,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                //Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList()
+                Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList()
             };
         }
 
@@ -70,11 +75,11 @@ namespace Application.Services
                 new Claim("UserName", user.UserName),
             };
 
-            /*foreach (var role in user.UserRoles)
+            foreach (var role in user.UserRoles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role.Role.Name));
             }
-*/
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -94,6 +99,25 @@ namespace Application.Services
             var random = new byte[64];
             RandomNumberGenerator.Fill(random);
             return Convert.ToBase64String(random);
+        }
+
+        public async Task ResetPassword(ResetPasswordDto input)
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = Convert.ToInt32(userIdClaim);
+            var user = await _userRepo.GetById(userId);
+
+            var passwordHasher = new PasswordHasher<User>();
+            var passowrdResult = passwordHasher.VerifyHashedPassword(user, user.Password, input.OldPassword);
+
+            if (passowrdResult == PasswordVerificationResult.Failed)
+            {
+                throw new UnauthorizedAccessException("Old password is incorrect.");
+            }
+
+            user.Password = passwordHasher.HashPassword(user, input.NewPassword);
+            _userRepo.Update(user);
+            await _userRepo.SaveChanges();
         }
     }
 }

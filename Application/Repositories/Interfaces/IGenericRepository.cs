@@ -5,8 +5,10 @@
         Task<T> GetById(int id);
         IQueryable<T> GetAll();
         Task Insert(T entity);
+        Task InsertRange(List<T> entity);
         void Update(T entity);
-        Task Delete(int id);
+        Task Delete(T entity);
+        Task DeleteRange(List<T> entity);
         Task<int> SaveChanges();
     }
 }

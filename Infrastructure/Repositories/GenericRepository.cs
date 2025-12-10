@@ -1,6 +1,6 @@
 ﻿using Application.Repositories.Interfaces;
 using Infrastructure.Context;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
         }
         public IQueryable<T> GetAll()
         {
-            return _dbContext.Set<T>().AsQueryable();
+            return _dbContext.Set<T>();
         }
 
         public async Task Insert(T entity)
@@ -25,18 +25,24 @@ namespace Infrastructure.Repositories
             await _dbContext.Set<T>().AddAsync(entity);
         }
 
-        public void Update(T entity)
+        public async Task InsertRange(List<T> entity)
         {
-            _dbContext.Set<T>().Update(entity);
+            await _dbContext.Set<T>().AddRangeAsync(entity);
         }
 
-        public async Task Delete(int id)
+        public void Update(T entity)
         {
-            var obj = await GetById(id);
-            if (obj != null)
-            {
-                _dbContext.Set<T>().Remove(obj);
-            }
+            _dbContext.Entry(entity).State = EntityState.Modified;
+        }
+
+        public async Task Delete(T entity)
+        {
+            _dbContext.Set<T>().Remove(entity);
+        }
+
+        public async Task DeleteRange(List<T> entity)
+        {
+            _dbContext.Set<T>().RemoveRange(entity);
         }
 
         public async Task<int> SaveChanges()

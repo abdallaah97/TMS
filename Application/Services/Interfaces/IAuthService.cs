@@ -8,5 +8,6 @@ namespace Application.Services.Interfaces
         Task<LoginResponseDto> LoginAsync(LoginRequestDto input);
         string GenerateAccessToken(User user);
         string GenerateRefreshToken();
+        Task ResetPassword(ResetPasswordDto input);
     }
 }
