@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain;
+using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,9 +10,9 @@ public static class UserSeedData
         if (!context.Roles.Any())
         {
             context.Roles.AddRange(
-                new Role { Name = "Admin" },
-                new Role { Name = "Manager" },
-                new Role { Name = "Employee" }
+                new Role { Name = TMSConst.ADMIN_ROLE },
+                new Role { Name = TMSConst.MANAGER_ROLE },
+                new Role { Name = TMSConst.EMPLOYEE_ROLE }
             );
             await context.SaveChangesAsync();
         }

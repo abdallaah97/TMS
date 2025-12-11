@@ -33,5 +33,12 @@ namespace TMS.Controllers
             return Ok();
         }
 
+        [HttpGet("RefreshToken")]
+        public async Task<IActionResult> RefreshToken(string refreshToken)
+        {
+            var accessToken = await _authService.RefreshToken(refreshToken);
+            return Ok(accessToken);
+        }
+
     }
 }

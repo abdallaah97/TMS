@@ -9,5 +9,6 @@ namespace Application.Services.Interfaces
         string GenerateAccessToken(User user);
         string GenerateRefreshToken();
         Task ResetPassword(ResetPasswordDto input);
+        Task<string> RefreshToken(string refreshToken);
     }
 }

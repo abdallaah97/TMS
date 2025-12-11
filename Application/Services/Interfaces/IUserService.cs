@@ -1,5 +1,5 @@
-﻿using Application.DTOs;
-using Application.DTOs.Auth;
+﻿using Application.DTOs.Auth;
+using Application.DTOs.User;
 
 namespace Application.Services.Interfaces
 {
@@ -11,5 +11,6 @@ namespace Application.Services.Interfaces
         Task DeleteUser(int id);
         Task<List<UserListDto>> GetUsers(UserFilterDto filter);
         Task ChangePassword(ChangePasswordDto input);
+        List<EmployeeListDto> GetEmployeeUsers(int? userId);
     }
 }

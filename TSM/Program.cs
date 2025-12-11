@@ -75,6 +75,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserService), typeof(UserService));
 builder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));
+builder.Services.AddScoped(typeof(IDepartmentService), typeof(DepartmentService));
+builder.Services.AddScoped(typeof(IProjectService), typeof(ProjectService));
 
 
 var app = builder.Build();

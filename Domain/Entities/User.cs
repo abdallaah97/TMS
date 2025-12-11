@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
@@ -16,6 +17,7 @@ namespace Domain.Entities
         [MaxLength(200)]
         public string UserName { get; set; }
         public bool IsActive { get; set; }
+        public UserType UserType { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
         public ICollection<Project> Projects { get; set; }
         public ICollection<TaskApp> Tasks { get; set; }

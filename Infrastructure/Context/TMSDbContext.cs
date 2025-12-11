@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context
 {
@@ -19,6 +20,7 @@ namespace Infrastructure.Context
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectType> ProjectTypes { get; set; }
         public DbSet<ActivityLog> ActivityLogs { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +32,8 @@ namespace Infrastructure.Context
             {
                 relationship.DeleteBehavior = DeleteBehavior.NoAction;
             }
+
+            ProjectTypeSeedData.Seed(modelBuilder);
         }
     }
 }

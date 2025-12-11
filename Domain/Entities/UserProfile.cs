@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
@@ -11,5 +12,8 @@ namespace Domain.Entities
         public int? DepartmentId { get; set; }
         [ForeignKey("DepartmentId")]
         public Department Department { get; set; }
+        public int? ManagerId { get; set; }
+        [ForeignKey("ManagerId")]
+        public User Manager { get; set; }
     }
 }

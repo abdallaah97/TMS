@@ -1,12 +1,13 @@
-﻿using Application.DTOs;
-using Application.DTOs.Auth;
+﻿using Application.DTOs.Auth;
+using Application.DTOs.User;
 using Application.Services.Interfaces;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TMS.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = TMSConst.ADMIN_ROLE)]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase

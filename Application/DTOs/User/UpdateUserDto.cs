@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs
+namespace Application.DTOs.User
 {
     public class UpdateUserDto
     {
@@ -12,5 +12,8 @@ namespace Application.DTOs
         public string UserName { get; set; }
         [Required]
         public List<int> RoleIds { get; set; }
+        public int? ManagerId { get; set; }
+        public int? DepartmentId { get; set; }
+
     }
 }

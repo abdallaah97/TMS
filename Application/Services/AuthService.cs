@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 
 namespace Application.Services
@@ -19,13 +20,15 @@ namespace Application.Services
     {
         private readonly IConfiguration _config;
         private readonly IGenericRepository<User> _userRepo;
+        private readonly IGenericRepository<RefreshToken> _refreshTokenRepo;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(IConfiguration config, IGenericRepository<User> userRepo, IHttpContextAccessor httpContextAccessor)
+        public AuthService(IConfiguration config, IGenericRepository<User> userRepo, IHttpContextAccessor httpContextAccessor, IGenericRepository<RefreshToken> refreshTokenRepo)
         {
             _config = config;
             _userRepo = userRepo;
             _httpContextAccessor = httpContextAccessor;
+            _refreshTokenRepo = refreshTokenRepo;
         }
 
         public async Task<LoginResponseDto> LoginAsync(LoginRequestDto input)
@@ -49,6 +52,13 @@ namespace Application.Services
 
             var accessToken = GenerateAccessToken(user);
             var refreshToken = GenerateRefreshToken();
+
+            await _refreshTokenRepo.Insert(new RefreshToken
+            {
+                Token = refreshToken,
+                UserId = user.Id,
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
 
             return new LoginResponseDto
             {
@@ -99,6 +109,21 @@ namespace Application.Services
             var random = new byte[64];
             RandomNumberGenerator.Fill(random);
             return Convert.ToBase64String(random);
+        }
+
+        public async Task<string> RefreshToken(string refreshToken)
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = Convert.ToInt32(userIdClaim);
+
+            var storedToken = _refreshTokenRepo.GetAll()
+                .FirstOrDefault(rt => rt.UserId == userId && rt.Token == refreshToken && rt.Expires > DateTime.UtcNow);
+            if (storedToken == null)
+            {
+                throw new SecurityTokenException("Invalid refresh token.");
+            }
+            var user = await _userRepo.GetById(storedToken.UserId);
+            return GenerateAccessToken(user);
         }
 
         public async Task ResetPassword(ResetPasswordDto input)
